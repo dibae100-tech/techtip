@@ -40,4 +40,5 @@ HTTP 요청을 패킷 수준에서 로깅하는 방법도 있습니다.
         
         sudo tail -f /var/log/syslog
 
-    <img src="../img/tcpdump01.png" alt="산업용PC" width="900">
+<img src="../img/tcpdump01.png" alt="산업용PC" width="900">
+<img src="../img/tcpdump02.png" alt="산업용PC" width="900">
