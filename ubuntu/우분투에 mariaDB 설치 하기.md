@@ -96,3 +96,25 @@ Ensure that MariaDB is configured to accept remote connections. This involves ed
         SHOW VARIABLES LIKE 'event_scheduler';
         
         SHOW VARIABLES LIKE 'time_zone';
+
+### Step 7 : UTF-8 설정 확인 
+
+        sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+
+        #
+        
+        # * Character sets
+        
+        #
+        
+        
+        
+        # MySQL/MariaDB default is Latin1, but in Debian we rather default to the full
+        
+        # utf8 4-byte character set. See also client.cnf
+        
+        character-set-server  = utf8mb4
+        
+        collation-server      = utf8mb4_general_ci
+
+
