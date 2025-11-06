@@ -52,3 +52,4 @@
       
       systemctl status chrony
 
+<img src="../img/chrony01.png" alt="산업용PC" width="900">
