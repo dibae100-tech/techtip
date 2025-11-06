@@ -46,10 +46,76 @@
       # 11분마다 커널 RTC 동기화 활성화
       rtcsync
 
- Chrony 동기화 상태 확인
+#### 2. Chrony 동기화 상태 확인
  
       sudo systemctl restart chrony
       
       systemctl status chrony
 
 <img src="../img/chrony01.png" alt="산업용PC" width="900">
+
+
+#### 3.chronyc tracking, chronyc sources -v 분석 
+
+      Reference ID    : 6AF7F86A (106.247.248.106)  # 현재 참조하는 NTP 서버
+      
+      Stratum         : 3                            # 현재 동기화된 Stratum 레벨
+      
+      Ref time (UTC)  : Sun Mar 09 15:23:47 2025    # 마지막 동기화된 시간 (UTC)
+      
+      System time     : 0.000000017 seconds fast    # 현재 시스템 시간과 NTP 시간 차이
+      
+      Last offset     : +0.005524827 seconds        # 마지막으로 보정된 오차
+      
+      RMS offset      : 0.005524827 seconds         # 보정된 오차의 평균값
+      
+      Frequency       : 15.212 ppm slow             # 시스템 클럭 주파수 조정값
+      
+      Residual freq   : +210.061 ppm                # 남은 주파수 보정값
+      
+      Skew            : 5.749 ppm                   # 예상 오차
+      
+      Root delay      : 0.041864853 seconds         # NTP 서버까지 왕복 지연 시간
+      
+      Root dispersion : 0.017857527 seconds         # 루트 분산(오차율)
+      
+      Update interval : 1.4 seconds                 # NTP 업데이트 간격
+      
+      Leap status     : Normal                      # 정상 상태
+
+
+➡ 현재 106.247.248.106 (Stratum 2) 서버와 정상적으로 동기화됨
+➡ 시스템 클럭이 안정적으로 유지되고 있음
+
+      MS Name/IP address         Stratum Poll Reach LastRx Last sample
+      
+      ===============================================================================
+      
+      ^? localhost                     0   7     0     -     +0ns[   +0ns] +/-    0ns
+      
+      ^- time4.google.com              1   6    17    57  -3529us[-3529us] +/-   31ms
+      
+      ^* 106.247.248.106               2   6    17    57   +341us[+5866us] +/-   26ms
+      
+      ^- 121.174.142.82                3   6    17    57  -2048us[-2048us] +/-   51ms
+
+   MS: ^*(현재 선택된 서버), ^-(보조 서버), ^?(사용 불가능한 서버)
+   Stratum: 서버의 Stratum 레벨 (숫자가 낮을수록 더 정확함)
+   Poll: 시간 동기화 간격 (2^Poll 초)
+   Reach: 서버의 가용성 (8비트 0~377, 높을수록 좋음)
+   LastRx: 마지막 동기화 시간(초)
+   Last sample: 마지막 샘플 오차값 및 조정값
+      
+      ✅ ^* 106.247.248.106 (Stratum 2) 서버가 현재 최적의 동기화 서버로 선택됨
+      ✅ ^- time4.google.com (Stratum 1)이 보조 서버로 사용 중
+      ✅ ^- 121.174.142.82 (Stratum 3)도 연결되어 있지만 우선순위가 낮음
+      ❌ ^? localhost는 Reach 값이 0이므로 사용할 수 없음
+      
+#### 🎯 추가 조치 (선택)
+
+      RTC(하드웨어 클럭) 동기화 확인
+      hwclock --show
+      만약 시스템 시간이 RTC와 맞지 않으면 아래 명령어 실행:
+      sudo hwclock --systohc
+      
+### 2. 클라이언트 설치 하기 
