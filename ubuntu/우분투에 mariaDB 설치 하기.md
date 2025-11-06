@@ -12,14 +12,16 @@
         1. Check If You Have Sudo Privileges
         Run the following command to check if your user (roadee) is in the sudo group:
         
-        groups roadee
+            groups roadee
+            
         If you don't see sudo in the output, you need to add your user to the sudo group:
         
-        sudo usermod -aG sudo roadee
+            sudo usermod -aG sudo roadee
+            
         Then, restart your session:
         
-        su - roadee
+            su - roadee
         2. Use Sudo to Enable MariaDB
         Try running the command with sudo:
         
-        sudo systemctl enable mariadb
+            sudo systemctl enable mariadb
