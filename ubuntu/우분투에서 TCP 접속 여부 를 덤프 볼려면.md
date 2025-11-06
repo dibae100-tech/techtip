@@ -23,7 +23,7 @@
 ### 3. iptables 로그 남기기 (고급)
 HTTP 요청을 패킷 수준에서 로깅하는 방법도 있습니다.
 
-예시
+#### 예시
         sudo iptables -A INPUT -p tcp --dport 80 -j LOG --log-prefix "HTTP_REQUEST: "
         이후 /var/log/syslog나 /var/log/kern.log에서 로그 확인 가능
         sudo tail -f /var/log/syslog
