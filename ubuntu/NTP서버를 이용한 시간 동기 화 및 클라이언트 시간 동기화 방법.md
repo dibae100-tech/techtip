@@ -119,3 +119,45 @@
       sudo hwclock --systohc
       
 ### 2. 클라이언트 설치 하기 
+
+#### 1) 소프트웨어설치 
+
+      sudo apt update 
+      
+      sudo apt install chrony -y
+
+#### 2) 환경 설정 
+
+      sudo nano /etc/chrony/chrony.conf
+
+
+      # 클라이언트의 Chrony 설정
+      
+      # 내부 네트워크 NTP 서버 (192.168.0.4) 사용
+      server 192.168.0.4 iburst prefer
+      
+      # (선택 사항) 외부 NTP 서버를 백업으로 추가 가능
+      # server time.google.com iburst
+      # server 0.pool.ntp.org iburst
+      # server 1.pool.ntp.org iburst
+      
+      # 드리프트 파일 저장 위치
+      driftfile /var/lib/chrony/chrony.drift
+      
+      # 빠른 시간 조정
+      makestep 1 3
+      
+      # 로그 설정
+      logdir /var/log/chrony
+      
+      # 11분마다 RTC 동기화 활성화
+      rtcsync
+      
+#### 3) 실행 및 동기화 확인 
+
+      sudo systemctl restart chrony
+      
+      chronyc tracking
+      
+      chronyc sources -v
+ 
