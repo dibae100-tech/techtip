@@ -158,6 +158,8 @@
       sudo systemctl restart chrony
       
       chronyc tracking
+
+<img src="../img/chrony02.png" alt="산업용PC" width="900">
       
       chronyc sources -v
  
