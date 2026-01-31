@@ -322,6 +322,19 @@ r = requests.get(f'http://{SERVER_IP}:{PORT}/tts?text=안녕하세요&speaker=So
 with open('remote_test.wav', 'wb') as f:
     f.write(r.content)
 print(f'저장 완료: {len(r.content)} bytes')
+
+# 일반 녹음 테스트
+
+python -c "
+import requests
+
+r = requests.get('http://127.0.0.1:42423/tts?text=안녕하세요, 저는 인공지능 음성 비서입니다. 무엇을 도와드릴까요?')
+with open('sohee_test.wav', 'wb') as f:
+    f.write(r.content)
+print('저장 완료!')
+"
+
+
 ```
 
 
