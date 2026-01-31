@@ -34,42 +34,42 @@ conda activate voice-ai
 
 ### 3. Install Dependencies
 
-\`\`\`bash
+```bash
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 pip install -U qwen-tts fastapi uvicorn
 sudo apt install sox libsox-fmt-all -y
-\`\`\`
+```
 
 ### 4. Run Server
 
-\`\`\`bash
+```bash
 python tts_server.py
-\`\`\`
+```
 
 ### 5. Test
 
-\`\`\`bash
+```bash
 curl "http://localhost:42423/tts?text=안녕하세요" -o test.wav
-\`\`\`
+```
 
 ## 📡 API
 
 ### Health Check
 
-\`\`\`
+```bash
 GET /health
-\`\`\`
+```
 
 Response:
-\`\`\`json
+```json
 {"status": "ok"}
-\`\`\`
+```
 
 ### Text-to-Speech
 
-\`\`\`
+```
 GET /tts?text={텍스트}&speaker={화자}&seed={시드}
-\`\`\`
+```
 
 | Parameter | Required | Default | Description |
 |-----------|----------|---------|-------------|
@@ -81,13 +81,13 @@ Response: \`audio/wav\`
 
 ### Example
 
-\`\`\`python
+```python
 import requests
 
 r = requests.get('http://localhost:42423/tts?text=안녕하세요')
 with open('output.wav', 'wb') as f:
     f.write(r.content)
-\`\`\`
+```
 
 ## 🎤 Available Speakers
 
@@ -111,35 +111,35 @@ with open('output.wav', 'wb') as f:
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 qwen3-tts-server/
 ├── README.md
 ├── tts_server.py      # Main server
 ├── test_tts.py        # Basic test
 ├── test_speed.py      # Speed benchmark
 └── requirements.txt
-\`\`\`
+```
 
 ## 🔧 Configuration
 
 서버 포트 변경:
 
-\`\`\`python
+```python
 # tts_server.py
 uvicorn.run(app, host="0.0.0.0", port=42423)  # 포트 변경
-\`\`\`
+```
 
 방화벽 설정:
 
-\`\`\`bash
+```bash
 sudo ufw allow 42423
-\`\`\`
+```
 
 ## 🧪 Testing
 
 ### 기본 TTS 테스트
 
-\`\`\`python
+```python
 # test_tts.py
 import torch
 import soundfile as sf
@@ -161,17 +161,17 @@ wavs, sr = model.generate_custom_voice(
 
 sf.write("test_output.wav", wavs[0], sr)
 print("완료! test_output.wav 생성됨")
-\`\`\`
+```
 
 실행:
-\`\`\`bash
+```bash
 python test_tts.py
 aplay test_output.wav
-\`\`\`
+```
 
 ### 속도 테스트
 
-\`\`\`python
+```python
 # test_speed.py
 import torch
 import time
@@ -209,15 +209,15 @@ for text in texts:
     print(f"텍스트: {text}")
     print(f"  생성 시간: {elapsed:.2f}초 | 오디오: {audio_duration:.2f}초 | RTF: {rtf:.2f}")
     print()
-\`\`\`
+```
 
 실행:
-\`\`\`bash
+```bash
 python test_speed.py
-\`\`\`
+```
 
 출력 예시:
-\`\`\`
+```
 === 속도 테스트 (Sohee) ===
 
 텍스트: 안녕하세요.
@@ -228,11 +228,11 @@ python test_speed.py
 
 텍스트: 안녕하세요, 저는 인공지능 음성 비서입니다. 무엇을 도와드릴까요?
   생성 시간: 7.57초 | 오디오: 5.82초 | RTF: 1.30
-\`\`\`
+```
 
 ### 전체 화자 테스트
 
-\`\`\`python
+```python
 # test_all_voices.py
 import torch
 import soundfile as sf
@@ -270,18 +270,18 @@ for speaker, desc in speakers:
         print(f"실패: {speaker} - {e}")
 
 print("\n모든 음성 생성 완료!")
-\`\`\`
+```
 
 실행:
-\`\`\`bash
+```bash
 python test_all_voices.py
-\`\`\`
+```
 
 ### API 서버 테스트
 
 서버 실행 후 새 터미널에서:
 
-\`\`\`bash
+```bash
 # Health Check
 curl http://localhost:42423/health
 
@@ -302,11 +302,11 @@ print('저장: test.wav')
 
 # 재생
 aplay test.wav
-\`\`\`
+```
 
 ### 원격 서버 테스트
 
-\`\`\`python
+```python
 import requests
 
 # 서버 IP로 변경
@@ -322,12 +322,7 @@ r = requests.get(f'http://{SERVER_IP}:{PORT}/tts?text=안녕하세요&speaker=So
 with open('remote_test.wav', 'wb') as f:
     f.write(r.content)
 print(f'저장 완료: {len(r.content)} bytes')
-\`\`\`
-
-
-
-
-
+```
 
 
 ## 📚 References
