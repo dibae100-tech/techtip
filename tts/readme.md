@@ -4,7 +4,7 @@ Flask 기반의 **듀얼 엔진 Text-to-Speech 서버**입니다.
 고품질 로컬 AI 모델(**Qwen3-TTS**)과 빠른 클라우드 TTS(**Edge-TTS**)를 하나의 서버에서 동시에 제공합니다.  
 출력은 **WAV 16bit 24kHz mono** 형식으로, ESP32 등 임베디드 디바이스와의 호환을 고려하여 설계되었습니다.
 <!-- 히어로 배너 -->
-![TTS Server Banner](./docs/images/banner.png)
+![TTS Server Banner](./images/banner.png)
 ---
 
 ## 📋 목차
@@ -29,7 +29,7 @@ Flask 기반의 **듀얼 엔진 Text-to-Speech 서버**입니다.
 ---
 
 ## 🏗 아키텍처
-![System Architecture](./docs/images/architecture.png)
+![System Architecture](./images/architecture.png)
 ```text
 ┌──────────────────────────────────────────────────────────┐
 │                    TTS Server (:5000)                     │
@@ -165,7 +165,7 @@ sudo systemctl enable --now tts-server
 
 ## 📖 API 레퍼런스
 
-![API Endpoint Map](./docs/images/api-map.png)
+![API Endpoint Map](./images/api-map.png)
 
 ### `GET /health`
 
@@ -476,7 +476,7 @@ void requestTTS(const char* text) {
 
 ## ⚖ 엔진 비교
 
-![Engine Comparison](./docs/images/engine-comparison.png)
+![Engine Comparison](./images/engine-comparison.png)
 
 | 항목 | Qwen3-TTS (`/tts/instant`) | Edge-TTS (`/tts/edge`) |
 |------|:---:|:---:|
