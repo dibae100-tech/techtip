@@ -6,6 +6,8 @@ Flask 기반의 **듀얼 엔진 Text-to-Speech 서버**입니다.
 출력은 **WAV 16bit 24kHz mono** 형식으로, ESP32 등 임베디드 디바이스와의 호환을 고려하여 설계되었습니다.
 
 ---
+![Request-Response Flow](./images/sequence.png)
+
 
 ## 📋 목차
 
