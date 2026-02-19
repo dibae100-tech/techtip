@@ -72,6 +72,13 @@ Flask 기반의 **듀얼 엔진 Text-to-Speech 서버**입니다.
 > Qwen3-TTS-12Hz-1.7B 모델은 `bfloat16` 정밀도로 로드되며, 약 **4~6GB VRAM**을 사용합니다.  
 > RTX 3060 16GB 환경에서 안정적으로 동작합니다.
 
+<!-- Edge 파이프라인 -->
+![Edge-TTS Pipeline](./images/edge-pipeline.png)
+
+<!-- 음성 매트릭스 -->
+![Voice Matrix](./images/voice-matrix.png)
+
+
 ---
 
 ## 📦 설치
