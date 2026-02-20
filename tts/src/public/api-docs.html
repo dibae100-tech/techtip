@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 문서 - TTS Server</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ═══════ 헤더 ═══════ -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">🔊</div>
+            <div>
+                <h1>TTS Test Console</h1>
+                <div class="header-sub">OnPromise-TTS + Edge-TTS</div>
+            </div>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">테스트</a>
+                <a href="/api-docs" class="nav-link active">API 문서</a>
+            </nav>
+        </div>
+        <div class="server-status">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">연결 확인 중...</span>
+        </div>
+    </div>
+
+    <!-- ═══════ API 문서 본문 ═══════ -->
+    <div class="docs-layout">
+
+        <!-- 사이드 네비게이션 -->
+        <div class="docs-sidebar">
+            <div class="docs-sidebar-title">API Reference</div>
+            <nav class="docs-nav">
+                <a href="#overview" class="docs-nav-link active" onclick="scrollToSection(event, 'overview')">개요</a>
+                <a href="#base-url" class="docs-nav-link" onclick="scrollToSection(event, 'base-url')">Base URL</a>
+                <a href="#health" class="docs-nav-link" onclick="scrollToSection(event, 'health')">GET /health</a>
+                <a href="#voices" class="docs-nav-link" onclick="scrollToSection(event, 'voices')">GET /voices</a>
+                <a href="#config" class="docs-nav-link" onclick="scrollToSection(event, 'config')">GET /config</a>
+                <div class="docs-nav-divider"></div>
+                <div class="docs-nav-group">TTS 엔드포인트</div>
+                <a href="#tts-edge" class="docs-nav-link" onclick="scrollToSection(event, 'tts-edge')">POST /tts/edge</a>
+                <a href="#tts-instant" class="docs-nav-link" onclick="scrollToSection(event, 'tts-instant')">POST /tts/instant</a>
+                <div class="docs-nav-divider"></div>
+                <a href="#errors" class="docs-nav-link" onclick="scrollToSection(event, 'errors')">에러 코드</a>
+                <a href="#examples" class="docs-nav-link" onclick="scrollToSection(event, 'examples')">사용 예제</a>
+            </nav>
+        </div>
+
+        <!-- 문서 콘텐츠 -->
+        <div class="docs-content">
+
+            <!-- 개요 -->
+            <section id="overview" class="docs-section">
+                <h2 class="docs-h2">개요</h2>
+                <p class="docs-desc">
+                    TTS Server는 텍스트를 음성으로 변환하는 REST API를 제공합니다.
+                    두 가지 엔진을 지원하며, 모든 응답 오디오는 <strong>WAV 16bit 24kHz mono</strong> 형식으로 반환됩니다.
+                </p>
+                <div class="docs-card-row">
+                    <div class="docs-card">
+                        <div class="docs-card-icon">⚡</div>
+                        <div class="docs-card-title">Edge-TTS</div>
+                        <div class="docs-card-desc">Microsoft Edge 기반 TTS 엔진. 빠른 응답 속도, 7종 음성 지원.</div>
+                        <span class="docs-badge badge-green">빠름</span>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-icon">🧠</div>
+                        <div class="docs-card-title">OnPromise-TTS</div>
+                        <div class="docs-card-desc">OnPromise  모델 기반 TTS. 고품질 음성 합성, GPU 가속.</div>
+                        <span class="docs-badge badge-purple">고품질</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Base URL -->
+            <section id="base-url" class="docs-section">
+                <h2 class="docs-h2">Base URL</h2>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Base URL</div>
+                    <pre class="docs-code">http://your-server-ip:5000</pre>
+                </div>
+                <p class="docs-desc">모든 엔드포인트는 위 Base URL을 기준으로 합니다.</p>
+            </section>
+
+            <!-- GET /health -->
+            <section id="health" class="docs-section">
+                <h2 class="docs-h2">
+                    <span class="docs-method get">GET</span>
+                    /health
+                </h2>
+                <p class="docs-desc">서버 상태 및 모델 로드 여부를 확인합니다.</p>
+
+                <h3 class="docs-h3">Request</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">cURL</div>
+                    <pre class="docs-code">curl http://localhost:5000/health</pre>
+                </div>
+
+                <h3 class="docs-h3">Response</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">200 OK</div>
+<pre class="docs-code">{
+    "status": "healthy",
+    "qwen_model_loaded": true,
+    "device": "cuda:0",
+    "edge_tts": "available",
+    "timestamp": "2026-02-20T14:07:46.048000"
+}</pre>
+                </div>
+
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>필드</th><th>타입</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>status</code></td><td>string</td><td>서버 상태</td></tr>
+                            <tr><td><code>qwen_model_loaded</code></td><td>boolean</td><td>OnPromise 모델 로드 여부</td></tr>
+                            <tr><td><code>device</code></td><td>string</td><td>GPU 디바이스</td></tr>
+                            <tr><td><code>edge_tts</code></td><td>string</td><td>Edge-TTS 사용 가능 여부</td></tr>
+                            <tr><td><code>timestamp</code></td><td>string</td><td>서버 현재 시간 (ISO 8601)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- GET /voices -->
+            <section id="voices" class="docs-section">
+                <h2 class="docs-h2">
+                    <span class="docs-method get">GET</span>
+                    /voices
+                </h2>
+                <p class="docs-desc">사용 가능한 음성 목록을 반환합니다.</p>
+
+                <h3 class="docs-h3">Request</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">cURL</div>
+                    <pre class="docs-code">curl http://localhost:5000/voices</pre>
+                </div>
+
+                <h3 class="docs-h3">Response</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">200 OK</div>
+<pre class="docs-code">{
+    "qwen": {
+        "speakers": ["Sohee", "Vivian", "Serena", "Ryan", "Aiden"],
+        "languages": ["Korean", "Chinese", "English", "Japanese"]
+    },
+    "edge": {
+        "voices": {
+            "sunhi":    {"id": "ko-KR-SunHiNeural",  "label": "SunHi (여성)",  "lang": "ko"},
+            "injoon":   {"id": "ko-KR-InJoonNeural",  "label": "InJoon (남성)", "lang": "ko"},
+            "hyunsu":   {"id": "ko-KR-HyunsuNeural",  "label": "Hyunsu (남성)", "lang": "ko"},
+            "jenny":    {"id": "en-US-JennyNeural",    "label": "Jenny (여성)",  "lang": "en"},
+            "guy":      {"id": "en-US-GuyNeural",      "label": "Guy (남성)",    "lang": "en"},
+            "xiaoxiao": {"id": "zh-CN-XiaoxiaoNeural", "label": "Xiaoxiao (여성)","lang": "zh"},
+            "nanami":   {"id": "ja-JP-NanamiNeural",   "label": "Nanami (여성)", "lang": "ja"}
+        },
+        "default": "ko-KR-SunHiNeural"
+    }
+}</pre>
+                </div>
+            </section>
+
+            <!-- GET /config -->
+            <section id="config" class="docs-section">
+                <h2 class="docs-h2">
+                    <span class="docs-method get">GET</span>
+                    /config
+                </h2>
+                <p class="docs-desc">서버 설정 정보 및 사용 가능한 엔드포인트 목록을 반환합니다.</p>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">cURL</div>
+                    <pre class="docs-code">curl http://localhost:5000/config</pre>
+                </div>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">200 OK</div>
+<pre class="docs-code">{
+    "service": "TTS Server (OnPromise + Edge)",
+    "output": "WAV 16bit 24kHz mono",
+    "endpoints": {
+        "/":            "테스트 웹 페이지",
+        "/health":      "서버 상태 확인",
+        "/voices":      "음성 목록",
+        "/tts/instant": "OnPromise-TTS (고품질, 느림)",
+        "/tts/edge":    "Edge-TTS (빠름)"
+    }
+}</pre>
+                </div>
+            </section>
+
+            <!-- POST /tts/edge -->
+            <section id="tts-edge" class="docs-section">
+                <h2 class="docs-h2">
+                    <span class="docs-method post">POST</span>
+                    /tts/edge
+                    <span class="docs-badge badge-green">빠름</span>
+                </h2>
+                <p class="docs-desc">Edge-TTS 엔진으로 텍스트를 음성으로 변환합니다. 빠른 응답 속도가 특징입니다.</p>
+
+                <h3 class="docs-h3">Request Headers</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Headers</div>
+                    <pre class="docs-code">Content-Type: application/json</pre>
+                </div>
+
+                <h3 class="docs-h3">Request Body</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>파라미터</th><th>타입</th><th>필수</th><th>기본값</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>text</code></td>
+                                <td>string</td>
+                                <td><span class="docs-required">필수</span></td>
+                                <td>-</td>
+                                <td>변환할 텍스트</td>
+                            </tr>
+                            <tr>
+                                <td><code>voice</code></td>
+                                <td>string</td>
+                                <td>선택</td>
+                                <td><code>ko-KR-SunHiNeural</code></td>
+                                <td>음성 ID 또는 축약키 (sunhi, injoon, hyunsu, jenny, guy, xiaoxiao, nanami)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="docs-h3">사용 가능한 음성</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>축약키</th><th>음성 ID</th><th>언어</th><th>성별</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>sunhi</code></td><td>ko-KR-SunHiNeural</td><td>🇰🇷 한국어</td><td>여성</td></tr>
+                            <tr><td><code>injoon</code></td><td>ko-KR-InJoonNeural</td><td>🇰🇷 한국어</td><td>남성</td></tr>
+                            <tr><td><code>hyunsu</code></td><td>ko-KR-HyunsuNeural</td><td>🇰🇷 한국어</td><td>남성</td></tr>
+                            <tr><td><code>jenny</code></td><td>en-US-JennyNeural</td><td>🇺🇸 영어</td><td>여성</td></tr>
+                            <tr><td><code>guy</code></td><td>en-US-GuyNeural</td><td>🇺🇸 영어</td><td>남성</td></tr>
+                            <tr><td><code>xiaoxiao</code></td><td>zh-CN-XiaoxiaoNeural</td><td>🇨🇳 중국어</td><td>여성</td></tr>
+                            <tr><td><code>nanami</code></td><td>ja-JP-NanamiNeural</td><td>🇯🇵 일본어</td><td>여성</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="docs-h3">Request 예시</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">cURL</div>
+<pre class="docs-code">curl -X POST http://localhost:5000/tts/edge \
+  -H "Content-Type: application/json" \
+  -d '{"text": "안녕하세요, 반갑습니다.", "voice": "sunhi"}' \
+  --output output.wav</pre>
+                </div>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Python</div>
+<pre class="docs-code">import requests
+
+response = requests.post(
+    "http://localhost:5000/tts/edge",
+    json={"text": "안녕하세요, 반갑습니다.", "voice": "sunhi"}
+)
+
+with open("output.wav", "wb") as f:
+    f.write(response.content)</pre>
+                </div>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">JavaScript (fetch)</div>
+<pre class="docs-code">const response = await fetch("http://localhost:5000/tts/edge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: "안녕하세요, 반갑습니다.", voice: "sunhi" })
+});
+
+const audioBlob = await response.blob();
+const audioUrl = URL.createObjectURL(audioBlob);
+const audio = new Audio(audioUrl);
+audio.play();</pre>
+                </div>
+
+                <h3 class="docs-h3">Response</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>상태</th><th>Content-Type</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>200</code></td><td>audio/wav</td><td>WAV 오디오 바이너리</td></tr>
+                            <tr><td><code>400</code></td><td>application/json</td><td>text 누락</td></tr>
+                            <tr><td><code>500</code></td><td>application/json</td><td>생성 실패</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="docs-h3">GET 방식도 지원</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">GET (쿼리 파라미터)</div>
+<pre class="docs-code">curl "http://localhost:5000/tts/edge?text=안녕하세요&voice=sunhi" --output output.wav</pre>
+                </div>
+            </section>
+
+            <!-- POST /tts/instant -->
+            <section id="tts-instant" class="docs-section">
+                <h2 class="docs-h2">
+                    <span class="docs-method post">POST</span>
+                    /tts/instant
+                    <span class="docs-badge badge-purple">고품질</span>
+                </h2>
+                <p class="docs-desc">OnPromise-TTS 모델로 고품질 음성을 생성합니다. GPU가 필요하며 응답 시간이 Edge-TTS보다 깁니다.</p>
+
+                <h3 class="docs-h3">Request Body</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>파라미터</th><th>타입</th><th>필수</th><th>기본값</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>text</code></td>
+                                <td>string</td>
+                                <td><span class="docs-required">필수</span></td>
+                                <td>-</td>
+                                <td>변환할 텍스트</td>
+                            </tr>
+                            <tr>
+                                <td><code>language</code></td>
+                                <td>string</td>
+                                <td>선택</td>
+                                <td><code>Korean</code></td>
+                                <td>Korean, English, Chinese, Japanese</td>
+                            </tr>
+                            <tr>
+                                <td><code>speaker</code></td>
+                                <td>string</td>
+                                <td>선택</td>
+                                <td><code>Sohee</code></td>
+                                <td>Sohee, Vivian, Serena, Ryan, Aiden</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="docs-h3">사용 가능한 스피커</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>스피커</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>Sohee</code></td><td>한국어 기본 여성 음성</td></tr>
+                            <tr><td><code>Vivian</code></td><td>여성 음성</td></tr>
+                            <tr><td><code>Serena</code></td><td>여성 음성</td></tr>
+                            <tr><td><code>Ryan</code></td><td>남성 음성</td></tr>
+                            <tr><td><code>Aiden</code></td><td>남성 음성</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="docs-h3">Request 예시</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">cURL</div>
+<pre class="docs-code">curl -X POST http://localhost:5000/tts/instant \
+  -H "Content-Type: application/json" \
+  -d '{"text": "안녕하세요", "language": "Korean", "speaker": "Sohee"}' \
+  --output output.wav</pre>
+                </div>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Python</div>
+<pre class="docs-code">import requests
+
+response = requests.post(
+    "http://localhost:5000/tts/instant",
+    json={
+        "text": "안녕하세요, 반갑습니다.",
+        "language": "Korean",
+        "speaker": "Sohee"
+    }
+)
+
+with open("output.wav", "wb") as f:
+    f.write(response.content)
+
+print(f"Status: {response.status_code}, Size: {len(response.content)} bytes")</pre>
+                </div>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">JavaScript (fetch)</div>
+<pre class="docs-code">const response = await fetch("http://localhost:5000/tts/instant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        text: "안녕하세요, 반갑습니다.",
+        language: "Korean",
+        speaker: "Sohee"
+    })
+});
+
+const audioBlob = await response.blob();
+const audioUrl = URL.createObjectURL(audioBlob);
+const audio = new Audio(audioUrl);
+audio.play();</pre>
+                </div>
+
+                <h3 class="docs-h3">Response</h3>
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>상태</th><th>Content-Type</th><th>설명</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>200</code></td><td>audio/wav</td><td>WAV 오디오 바이너리</td></tr>
+                            <tr><td><code>400</code></td><td>application/json</td><td>text 누락 또는 잘못된 파라미터</td></tr>
+                            <tr><td><code>503</code></td><td>application/json</td><td>OnPromise 모델 미로드</td></tr>
+                            <tr><td><code>500</code></td><td>application/json</td><td>서버 오류</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 에러 코드 -->
+            <section id="errors" class="docs-section">
+                <h2 class="docs-h2">에러 코드</h2>
+                <p class="docs-desc">모든 에러 응답은 JSON 형식으로 반환됩니다.</p>
+
+                <div class="docs-code-block">
+                    <div class="docs-code-header">에러 응답 형식</div>
+<pre class="docs-code">{
+    "error": "에러 메시지"
+}</pre>
+                </div>
+
+                <div class="docs-table-wrap">
+                    <table class="docs-table">
+                        <thead>
+                            <tr><th>HTTP 상태</th><th>의미</th><th>원인</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>400</code></td><td>Bad Request</td><td>text 파라미터 누락, 잘못된 language/speaker 값</td></tr>
+                            <tr><td><code>404</code></td><td>Not Found</td><td>존재하지 않는 엔드포인트</td></tr>
+                            <tr><td><code>500</code></td><td>Internal Server Error</td><td>음성 생성 실패, 서버 내부 오류</td></tr>
+                            <tr><td><code>503</code></td><td>Service Unavailable</td><td>OnPromise 모델이 로드되지 않음</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 사용 예제 -->
+            <section id="examples" class="docs-section">
+                <h2 class="docs-h2">사용 예제</h2>
+
+                <h3 class="docs-h3">ESP32에서 호출</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Arduino (ESP32)</div>
+<pre class="docs-code">HTTPClient http;
+http.begin("http://192.168.1.16:5000/tts/edge");
+http.addHeader("Content-Type", "application/json");
+
+String payload = "{\"text\":\"안녕하세요\",\"voice\":\"sunhi\"}";
+int httpCode = http.POST(payload);
+
+if (httpCode == 200) {
+    // WAV 오디오 데이터 수신
+    int len = http.getSize();
+    WiFiClient* stream = http.getStreamPtr();
+    // I2S로 오디오 출력...
+}
+
+http.end();</pre>
+                </div>
+
+                <h3 class="docs-h3">연속 TTS</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">Python</div>
+<pre class="docs-code">import requests
+
+BASE_URL = "http://localhost:5000"
+
+# 서버 상태 확인
+health = requests.get(f"{BASE_URL}/health").json()
+print(f"서버 상태: {health['status']}")
+print(f"OnPromise 모델: {'로드됨' if health['qwen_model_loaded'] else '미로드'}")
+
+# Edge-TTS로 빠르게 생성
+sentences = [
+    "첫 번째 문장입니다.",
+    "두 번째 문장입니다.",
+    "세 번째 문장입니다."
+]
+
+for i, text in enumerate(sentences):
+    resp = requests.post(f"{BASE_URL}/tts/edge", json={"text": text, "voice": "sunhi"})
+    if resp.status_code == 200:
+        with open(f"output_{i}.wav", "wb") as f:
+            f.write(resp.content)
+        print(f"[{i}] 생성 완료: {len(resp.content)} bytes")
+    else:
+        print(f"[{i}] 실패: {resp.json()}")</pre>
+                </div>
+
+                <h3 class="docs-h3">엔진 비교 테스트</h3>
+                <div class="docs-code-block">
+                    <div class="docs-code-header">속도 비교</div>
+<pre class="docs-code">import requests
+import time
+
+BASE_URL = "http://localhost:5000"
+text = "인공지능 기술이 빠르게 발전하고 있습니다."
+
+# Edge-TTS
+start = time.time()
+resp = requests.post(f"{BASE_URL}/tts/edge", json={"text": text, "voice": "sunhi"})
+edge_time = time.time() - start
+print(f"Edge-TTS:  {edge_time:.2f}초, {len(resp.content)/1024:.1f}KB")
+
+# OnPromise-TTS
+start = time.time()
+resp = requests.post(f"{BASE_URL}/tts/instant", json={"text": text, "language": "Korean", "speaker": "Sohee"})
+onpromise_time = time.time() - start
+print(f"OnPromise-TTS: {onpromise_time:.2f}초, {len(resp.content)/1024:.1f}KB")</pre>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <span>&copy; Since 2017 FTH KOREA. All Rights Reserved.</span>
+    </footer>
+
+    <script src="/static/js/api-docs.js"></script>
+</body>
+</html>

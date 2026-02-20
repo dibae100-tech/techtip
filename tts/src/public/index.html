@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS 테스트 콘솔</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- ═══════ 헤더 ═══════ -->
+    <!-- ═══════ 헤더 ═══════ -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">🔊</div>
+            <div>
+                <h1>TTS Test Console</h1>
+                <div class="header-sub">OnPromise-TTS + Edge-TTS</div>
+            </div>
+            <nav class="header-nav">
+                <a href="/" class="nav-link active">테스트</a>
+                <a href="/api-docs" class="nav-link">API 문서</a>
+            </nav>
+        </div>
+        <div class="server-status">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="status-text" id="statusText">연결 확인 중...</span>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <!-- ═══════ 사이드바 ═══════ -->
+        <div class="sidebar">
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">서버 연결</div>
+                <div class="input-group">
+                    <label>TTS Server URL</label>
+                    <input type="text" id="serverUrl" value="" placeholder="자동 감지">
+                </div>
+                <button class="connect-btn" onclick="checkServer()">🔗 서버 연결 확인</button>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">엔진 선택</div>
+                <div class="engine-tabs">
+                    <div class="engine-tab active" data-engine="edge" onclick="selectEngine('edge')">
+                        <span class="tab-icon">⚡</span>
+                        Edge-TTS
+                        <span class="tab-label">빠름</span>
+                    </div>
+                    <div class="engine-tab" data-engine="qwen" onclick="selectEngine('qwen')">
+                        <span class="tab-icon">🧠</span>
+                        OnPromise-TTS
+                        <span class="tab-label">고품질</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section options-panel active" id="edgeOptions">
+                <div class="sidebar-title">Edge-TTS 설정</div>
+                <div class="input-group">
+                    <label>음성</label>
+                    <select id="edgeVoice">
+                        <option value="sunhi">🇰🇷 SunHi (여성)</option>
+                        <option value="injoon">🇰🇷 InJoon (남성)</option>
+                        <option value="hyunsu">🇰🇷 Hyunsu (남성)</option>
+                        <option value="jenny">🇺🇸 Jenny (여성)</option>
+                        <option value="guy">🇺🇸 Guy (남성)</option>
+                        <option value="xiaoxiao">🇨🇳 Xiaoxiao (여성)</option>
+                        <option value="nanami">🇯🇵 Nanami (여성)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sidebar-section options-panel" id="qwenOptions">
+                <div class="sidebar-title">OnPromise-TTS 설정</div>
+                <div class="input-group">
+                    <label>언어</label>
+                    <select id="qwenLanguage">
+                        <option value="Korean">🇰🇷 Korean</option>
+                        <option value="English">🇺🇸 English</option>
+                        <option value="Chinese">🇨🇳 Chinese</option>
+                        <option value="Japanese">🇯🇵 Japanese</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>스피커</label>
+                    <select id="qwenSpeaker">
+                        <option value="Sohee">Sohee</option>
+                        <option value="Vivian">Vivian</option>
+                        <option value="Serena">Serena</option>
+                        <option value="Ryan">Ryan</option>
+                        <option value="Aiden">Aiden</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">빠른 테스트 문장</div>
+                <div class="presets">
+                    <button class="preset-btn" onclick="setPreset('안녕하세요, 반갑습니다.')">인사</button>
+                    <button class="preset-btn" onclick="setPreset('오늘 날씨가 정말 좋네요. 산책하기 딱 좋은 날이에요.')">날씨</button>
+                    <button class="preset-btn" onclick="setPreset('인공지능 기술이 빠르게 발전하고 있습니다. 음성 합성 기술도 점점 자연스러워지고 있어요.')">기술</button>
+                    <button class="preset-btn" onclick="setPreset('Hello, welcome to our TTS testing console. This is a sample sentence.')">English</button>
+                    <button class="preset-btn" onclick="setPreset('你好，欢迎使用语音合成测试系统。')">中文</button>
+                    <button class="preset-btn" onclick="setPreset('こんにちは、音声合成のテストへようこそ。')">日本語</button>
+                    <button class="preset-btn" onclick="setPreset('1234567890, 2025년 2월 20일, 3.14159')">숫자</button>
+                    <button class="preset-btn" onclick="setPreset('가나다라마바사아자차카타파하')">가나다라</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ═══════ 메인 콘텐츠 ═══════ -->
+        <div class="content-wrap">
+            <div class="content">
+
+                <!-- 텍스트 입력 -->
+                <div class="text-input-area">
+                    <textarea id="inputText" placeholder="여기에 텍스트를 입력하세요...&#10;&#10;음성으로 변환할 텍스트를 입력하고 생성 버튼을 누르세요.&#10;Ctrl + Enter 로 바로 생성할 수 있습니다." oninput="updateCharCount()"></textarea>
+                    <div class="text-toolbar">
+                        <span class="char-count" id="charCount">0자</span>
+                        <div class="toolbar-btns">
+                            <!-- ★ 실시간 경과 시간 표시 ★ -->
+                            <div class="elapsed-timer" id="elapsedTimer">
+                                <span class="elapsed-icon">⏱</span>
+                                <span class="elapsed-value" id="elapsedValue">0.0s</span>
+                            </div>
+                            <button class="clear-btn" onclick="clearInput()">🗑️ 초기화</button>
+                            <button class="generate-btn" id="generateBtn" onclick="generateTTS()">
+                                <span id="btnIcon">🔊</span>
+                                <span id="btnText">음성 생성</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ★ 결과 요약 배너 ★ -->
+                <div class="result-banner" id="resultBanner">
+                    <div class="result-item">
+                        <span class="result-label">엔진</span>
+                        <span class="result-value" id="resultEngine">-</span>
+                    </div>
+                    <div class="result-divider"></div>
+                    <div class="result-item">
+                        <span class="result-label">소요 시간</span>
+                        <span class="result-value result-time" id="resultTime">-</span>
+                    </div>
+                    <div class="result-divider"></div>
+                    <div class="result-item">
+                        <span class="result-label">파일 크기</span>
+                        <span class="result-value" id="resultSize">-</span>
+                    </div>
+                    <div class="result-divider"></div>
+                    <div class="result-item">
+                        <span class="result-label">텍스트</span>
+                        <span class="result-value" id="resultChars">-</span>
+                    </div>
+                </div>
+
+                <!-- 오디오 플레이어 -->
+                <div class="audio-section" id="audioSection">
+                    <div class="audio-section-title">🎵 생성된 음성</div>
+                    <div class="audio-player-wrap">
+                        <button class="play-btn" id="mainPlayBtn" onclick="toggleMainPlay()">▶</button>
+                        <div class="audio-info">
+                            <div class="audio-meta" id="audioMeta">-</div>
+                            <audio id="audioPlayer" controls></audio>
+                        </div>
+                    </div>
+                    <div class="audio-actions">
+                        <button class="audio-action-btn" onclick="downloadAudio()">💾 WAV 다운로드</button>
+                        <button class="audio-action-btn" onclick="replayAudio()">🔁 다시 재생</button>
+                    </div>
+                </div>
+
+                <!-- 히스토리 -->
+                <div class="history-section">
+                    <div class="history-title">📜 생성 히스토리</div>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+
+            </div>
+
+            <!-- 로그 패널 -->
+            <div class="log-panel" id="logPanel"></div>
+        </div>
+
+    </div>
+
+    <button class="log-toggle" onclick="toggleLog()">📋 로그</button>
+    <footer class="footer">
+        <span>© Since 2017 FTH KOREA. All Rights Reserved.</span>
+    </footer>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
